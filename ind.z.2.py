@@ -1,96 +1,113 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Вариант 11
-# Использовать словарь, содержащий следующие ключи: фамилия, имя; номер телефона;
-# дата рождения (список из трех чисел). Написать программу, выполняющую следующие
-# действия: ввод с клавиатуры данных в список, состоящий из словарей заданной структуры;
-# записи должны быть упорядочены по датам рождения; вывод на экран информации о
-# человеке, номер телефона которого введен с клавиатуры; если такого нет, выдать на
-# дисплей соответствующее сообщение.
+# Вариант6
+# Использовать словарь, содержащий следующие ключи: название пункта назначения; номер
+# поезда; время отправления. Написать программу, выполняющую следующие действия:
+# ввод с клавиатуры данных в список, состоящий из словарей заданной структуры; записи должны
+# быть размещены в алфавитном порядке по названиям пунктов назначения; вывод на экран
+# информации о поездах, отправляющихся после введенного с клавиатуры времени; если
+# таких поездов нет, выдать на дисплей соответствующее сообщение.
 
-import json
 import sys
+import json
+
 
 if __name__ == '__main__':
-    clo = []
+
+    trains = []
+
     while True:
         command = input(">>> ").lower()
+
         if command == 'exit':
             break
-
         elif command == 'add':
-            surname = input("Фамилия ")
-            name = input("Имя ")
-            number = int(input("Номер телефона "))
-            year = list(map(int, input("Дата рождения в формате: дд,мм,гггг ").split('.')))
+            name = input("Название пункта назначения: ")
+            num = int(input("Номер поезда: "))
+            time = input("Время отправления: ")
 
-            if not number:
-                print("Поле не заполнено")
-                exit(1)
-
-            clos = {
-                'surname': surname,
+            train = {
                 'name': name,
-                'number': number,
-                'year': year,
+                'num': num,
+                'time': time,
             }
-            clo.append(clos)
-            if len(clo) > 1:
-                clo.sort(key=lambda item: item.get('year', ''))
+
+            trains.append(train)
+            if len(trains) > 1:
+                trains.sort(key=lambda item: item.get('num', ''))
 
         elif command == 'list':
-            # Заголовок таблицы.
-            line = '+-{}-+-{}-+-{}-+-{}-+-{}-+'.format(
+            line = '+-{}-+-{}-+-{}-+-{}-+'.format(
                 '-' * 4,
+                '-' * 30,
                 '-' * 20,
-                '-' * 20,
-                '-' * 20,
-                '-' * 15
+                '-' * 17
             )
             print(line)
             print(
-                '| {:^4} | {:^20} | {:^20} | {:^20} | {:^15} |'.format(
+                '| {:^4} | {:^30} | {:^20} | {:^17} |'.format(
                     "№",
-                    "Фамилия ",
-                    "Имя",
-                    "Номер телефона",
-                    "Дата рождения"
+                    "Пункт назначения",
+                    "Номер поезда",
+                    "Время отправления"
                 )
             )
             print(line)
-            for idx, worker in enumerate(clo, 1):
+
+            for idx, train in enumerate(trains, 1):
                 print(
-                    '| {:^4} | {:^20} | {:^20} | {:^20} | {:^15} |'.format(
+                    '| {:>4} | {:<30} | {:<20} | {:>17} |'.format(
                         idx,
-                        worker.get('surname', ''),
-                        worker.get('name', ''),
-                        worker.get('number', ''),
-                        worker.get('year', 0)
+                        train.get('name', ''),
+                        train.get('num', ''),
+                        train.get('time', 0)
                     )
                 )
+
             print(line)
 
+        elif command.startswith('select '):
+
+            parts = command.split(' ', maxsplit=2)
+
+            time = int(parts[1])
+
+            count = 0
+            for train in trains:
+                if train.get('num') == time:
+                    count += 1
+                    print('Номер поезда:', train.get('num', ''))
+                    print('Пункт назначения:', train.get('name', ''))
+                    print('Время отправления:', train.get('time', ''))
+
+            if count == 0:
+                print("Таких поездов нет!")
+
         elif command.startswith('load '):
+            # Разбить команду на части для выделения имени файла.
             parts = command.split(' ', maxsplit=1)
 
+            # Прочитать данные из файла JSON.
             with open(parts[1], 'r') as f:
-                clo = json.load(f)
+                trains = json.load(f)
 
         elif command.startswith('save '):
+            # Разбить команду на части для выделения имени файла.
             parts = command.split(' ', maxsplit=1)
 
+            # Сохранить данные в файл JSON.
             with open(parts[1], 'w') as f:
-                json.dump(clo, f)
+                json.dump(trains, f)
 
         elif command == 'help':
-            # Вывести справку о работе с программой.
             print("Список команд:\n")
-            print("add - добавить ученика;")
-            print("list - вывести список учеников;")
+            print("add - добавить поезд;")
+            print("list - вывести список поездов;")
+            print("select <Время> - запросить информацию о выбранном поезде;")
             print("help - отобразить справку;")
-            print("exit - завершить работу с программой.")
             print("load <имя файла> - загрузить данные из файла;")
             print("save <имя файла> - сохранить данные в файл;")
+            print("exit - завершить работу с программой.")
         else:
             print(f"Неизвестная команда {command}", file=sys.stderr)
