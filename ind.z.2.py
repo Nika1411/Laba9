@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
             print(line)
 
-        elif command.startswith('select '):
+        elif command.startswith('select'):
 
             parts = command.split(' ', maxsplit=2)
 
