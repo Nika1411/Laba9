@@ -12,7 +12,6 @@
 import sys
 import json
 
-
 if __name__ == '__main__':
 
     trains = []
@@ -24,7 +23,7 @@ if __name__ == '__main__':
             break
         elif command == 'add':
             name = input("Название пункта назначения: ")
-            num = int(input("Номер поезда: "))
+            num = input("Номер поезда: ")
             time = input("Время отправления: ")
 
             train = {
@@ -71,15 +70,15 @@ if __name__ == '__main__':
 
             parts = command.split(' ', maxsplit=2)
 
-            time = int(parts[1])
+            times = parts[1]
 
             count = 0
             for train in trains:
-                if train.get('num') == time:
+                if train.get('time') == times:
                     count += 1
+                    print('Время отправления:', train.get('time', ''))
                     print('Номер поезда:', train.get('num', ''))
                     print('Пункт назначения:', train.get('name', ''))
-                    print('Время отправления:', train.get('time', ''))
 
             if count == 0:
                 print("Таких поездов нет!")
